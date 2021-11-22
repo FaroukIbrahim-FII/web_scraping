@@ -32,20 +32,30 @@ for job in results_ul:
         all_content.append(content_dict)
     i += 1
 
+def get_citations_needed_count(url):
 
-def get_citations_needed_report(res):
-    citation = []
+    res = requests.get(url)       
+    soup = BeautifulSoup(res.text,"html.parser")
+    result = soup.find_all("a", title="Wikipedia:Citation needed") 
+    return len(result)
 
-    for result in res:
-        citation.append(result.parent.parent.parent.text)
+def get_citations_needed_report(url):
+    citation_list= []
+    res = requests.get(url)       
+    soup = BeautifulSoup(res.text,"html.parser")
+    results = soup.find_all("a", title="Wikipedia:Citation needed")
 
-    final = '\n'.join(citation)
+    for result in results:
+        citation_list.append(result.parent.parent.parent.text)
+
+    final = '\n'.join(citation_list)
     return final
 
-print(get_citations_needed_report(results_ul))
-print(get_citations_needed_report(results_p))
+wikipedia_url = "https://en.wikipedia.org/wiki/History_of_Mexico"
+print(get_citations_needed_count(wikipedia_url))
+print(get_citations_needed_report(wikipedia_url))
 
-import json
-with open('all_content.json', 'w') as f:
-    content = json.dumps(all_content)
-    f.write(content)
+# import json
+# with open('all_content.json', 'w') as f:
+#     content = json.dumps(all_content)
+#     f.write(content)
